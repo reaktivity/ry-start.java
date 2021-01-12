@@ -29,7 +29,7 @@ import org.reaktivity.ry.RyCommand;
 
 import com.github.rvesse.airline.annotations.Command;
 
-@Command(name = "start")
+@Command(name = "start", description = "Start engine")
 public final class RyStartCommand extends RyCommand
 {
     private final CountDownLatch latch = new CountDownLatch(1);
@@ -48,18 +48,25 @@ public final class RyStartCommand extends RyCommand
             .errorHandler(this::onError)
             .build())
         {
+            System.out.println("starting");
+
             reaktor.start();
-            System.out.println("started reaktor");
+
+            System.out.println("started");
 
             Runtime.getRuntime().addShutdownHook(new Thread(latch::countDown));
 
             latch.await();
 
-            System.out.println("stopping reaktor");
+            System.out.println("stopping");
         }
         catch (Exception ex)
         {
             rethrowUnchecked(ex);
+        }
+        finally
+        {
+            System.out.println("stopped");
         }
     }
 
