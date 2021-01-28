@@ -18,7 +18,6 @@ module org.reaktivity.ry.list
     requires org.reaktivity.ry;
 
     requires org.agrona.core;
-    requires org.reaktivity.nukleus;
     requires org.reaktivity.reaktor;
 
     opens org.reaktivity.ry.start.internal.command
