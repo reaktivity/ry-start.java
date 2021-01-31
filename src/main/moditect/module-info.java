@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-module org.reaktivity.ry.list
+module org.reaktivity.ry.start
 {
     requires org.reaktivity.ry;
 

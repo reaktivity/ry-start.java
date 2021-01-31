@@ -56,13 +56,13 @@
     <dependency>
       <groupId>org.reaktivity</groupId>
       <artifactId>ry</artifactId>
-      <version>0.52</version>
+      <version>0.53</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.reaktivity</groupId>
       <artifactId>reaktor</artifactId>
-      <version>0.161</version>
+      <version>0.162</version>
     </dependency>
   </dependencies>
 
