@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.reaktivity</groupId>
       <artifactId>reaktor</artifactId>
-      <version>0.163</version>
+      <version>0.165</version>
     </dependency>
   </dependencies>
 
