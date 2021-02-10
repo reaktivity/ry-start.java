@@ -48,8 +48,6 @@ public final class RyStartCommand extends RyCommand
             .errorHandler(this::onError)
             .build())
         {
-            System.out.println("starting");
-
             reaktor.start();
 
             System.out.println("started");
@@ -58,15 +56,12 @@ public final class RyStartCommand extends RyCommand
 
             latch.await();
 
-            System.out.println("stopping");
-        }
-        catch (Exception ex)
-        {
-            rethrowUnchecked(ex);
-        }
-        finally
-        {
             System.out.println("stopped");
+        }
+        catch (Throwable ex)
+        {
+            System.out.println("error");
+            rethrowUnchecked(ex);
         }
     }
 
