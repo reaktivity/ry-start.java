@@ -18,6 +18,8 @@ package org.reaktivity.ry.start.internal.command;
 import static org.agrona.LangUtil.rethrowUnchecked;
 import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_DIRECTORY;
 
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -28,12 +30,16 @@ import org.reaktivity.reaktor.ReaktorConfiguration;
 import org.reaktivity.ry.RyCommand;
 
 import com.github.rvesse.airline.annotations.Command;
+import com.github.rvesse.airline.annotations.Option;
 
 @Command(name = "start", description = "Start engine")
 public final class RyStartCommand extends RyCommand
 {
     private final CountDownLatch latch = new CountDownLatch(1);
     private final Collection<Throwable> errors = new LinkedHashSet<>();
+
+    @Option(name = "-c", description = "config")
+    public URI configURI = Paths.get("ry.json").toUri();
 
     @Override
     public void run()
@@ -44,6 +50,7 @@ public final class RyStartCommand extends RyCommand
 
         try (Reaktor reaktor = Reaktor.builder()
             .config(config)
+            .configURI(configURI)
             .threads(1)
             .errorHandler(this::onError)
             .build())
