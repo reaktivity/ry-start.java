@@ -50,7 +50,7 @@ public final class RyStartCommand extends RyCommand
 
         try (Reaktor reaktor = Reaktor.builder()
             .config(config)
-            .configURI(configURI)
+            .configURL(configURI.toURL())
             .threads(1)
             .errorHandler(this::onError)
             .build())
@@ -62,6 +62,8 @@ public final class RyStartCommand extends RyCommand
             Runtime.getRuntime().addShutdownHook(new Thread(latch::countDown));
 
             latch.await();
+
+            errors.forEach(e -> e.printStackTrace(System.err));
 
             System.out.println("stopped");
         }
