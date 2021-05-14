@@ -17,7 +17,9 @@ package org.reaktivity.ry.start.internal.command;
 
 import static java.lang.Runtime.getRuntime;
 import static org.agrona.LangUtil.rethrowUnchecked;
+import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_BUFFER_POOL_CAPACITY;
 import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_DIRECTORY;
+import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_STREAMS_BUFFER_CAPACITY;
 
 import java.net.URI;
 import java.nio.file.Paths;
@@ -51,6 +53,8 @@ public final class RyStartCommand extends RyCommand
         Runtime runtime = getRuntime();
         Properties props = new Properties();
         props.setProperty(REAKTOR_DIRECTORY.name(), ".ry/engine");
+        props.setProperty(REAKTOR_STREAMS_BUFFER_CAPACITY.name(), Integer.toString(128 * 1024 * 1024));
+        props.setProperty(REAKTOR_BUFFER_POOL_CAPACITY.name(), Integer.toString(128 * 1024 * 1024));
         ReaktorConfiguration config = new ReaktorConfiguration(props);
 
         try (Reaktor reaktor = Reaktor.builder()
