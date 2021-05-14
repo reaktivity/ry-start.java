@@ -15,6 +15,7 @@
  */
 package org.reaktivity.ry.start.internal.command;
 
+import static java.lang.Runtime.getRuntime;
 import static org.agrona.LangUtil.rethrowUnchecked;
 import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_DIRECTORY;
 
@@ -41,9 +42,13 @@ public final class RyStartCommand extends RyCommand
     @Option(name = "-c", description = "config")
     public URI configURI = Paths.get("ry.json").toUri();
 
+    @Option(name = "-w", description = "workers")
+    public int workers = 1;
+
     @Override
     public void run()
     {
+        Runtime runtime = getRuntime();
         Properties props = new Properties();
         props.setProperty(REAKTOR_DIRECTORY.name(), ".ry/engine");
         ReaktorConfiguration config = new ReaktorConfiguration(props);
@@ -51,7 +56,7 @@ public final class RyStartCommand extends RyCommand
         try (Reaktor reaktor = Reaktor.builder()
             .config(config)
             .configURL(configURI.toURL())
-            .threads(1)
+            .threads(workers)
             .errorHandler(this::onError)
             .build())
         {
@@ -59,7 +64,7 @@ public final class RyStartCommand extends RyCommand
 
             System.out.println("started");
 
-            Runtime.getRuntime().addShutdownHook(new Thread(latch::countDown));
+            runtime.addShutdownHook(new Thread(latch::countDown));
 
             latch.await();
 
