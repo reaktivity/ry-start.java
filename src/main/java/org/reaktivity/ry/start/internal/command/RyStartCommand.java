@@ -17,11 +17,12 @@ package org.reaktivity.ry.start.internal.command;
 
 import static java.lang.Runtime.getRuntime;
 import static org.agrona.LangUtil.rethrowUnchecked;
-import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_BUFFER_POOL_CAPACITY;
 import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_DIRECTORY;
-import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_STREAMS_BUFFER_CAPACITY;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -47,14 +48,29 @@ public final class RyStartCommand extends RyCommand
     @Option(name = "-w", description = "workers")
     public int workers = 1;
 
+    @Option(name = "-p", description = "properties")
+    public String properties = "ry.props";
+
     @Override
     public void run()
     {
         Runtime runtime = getRuntime();
         Properties props = new Properties();
         props.setProperty(REAKTOR_DIRECTORY.name(), ".ry/engine");
-        props.setProperty(REAKTOR_STREAMS_BUFFER_CAPACITY.name(), Integer.toString(128 * 1024 * 1024));
-        props.setProperty(REAKTOR_BUFFER_POOL_CAPACITY.name(), Integer.toString(128 * 1024 * 1024));
+
+        Path path = Paths.get(properties);
+        if (Files.exists(path))
+        {
+            try
+            {
+                props.load(Files.newInputStream(path));
+            }
+            catch (IOException ex)
+            {
+                System.out.println("Failed to load properties: " + properties);
+            }
+        }
+
         ReaktorConfiguration config = new ReaktorConfiguration(props);
 
         try (Reaktor reaktor = Reaktor.builder()
