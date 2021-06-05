@@ -57,7 +57,7 @@
       <dependency>
         <groupId>org.reaktivity</groupId>
         <artifactId>ry-bom</artifactId>
-        <version>develop-SNAPSHOT</version>
+        <version>0.623</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
