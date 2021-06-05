@@ -52,17 +52,28 @@
     <jacoco.missed.count>0</jacoco.missed.count>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.reaktivity</groupId>
+        <artifactId>ry-bom</artifactId>
+        <version>0.623</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.reaktivity</groupId>
       <artifactId>ry</artifactId>
-      <version>0.53</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.reaktivity</groupId>
       <artifactId>reaktor</artifactId>
-      <version>0.165</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

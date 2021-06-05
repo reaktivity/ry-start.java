@@ -15,9 +15,15 @@
  */
 package org.reaktivity.ry.start.internal.command;
 
+import static java.lang.Runtime.getRuntime;
 import static org.agrona.LangUtil.rethrowUnchecked;
 import static org.reaktivity.reaktor.ReaktorConfiguration.REAKTOR_DIRECTORY;
 
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Properties;
@@ -28,6 +34,7 @@ import org.reaktivity.reaktor.ReaktorConfiguration;
 import org.reaktivity.ry.RyCommand;
 
 import com.github.rvesse.airline.annotations.Command;
+import com.github.rvesse.airline.annotations.Option;
 
 @Command(name = "start", description = "Start engine")
 public final class RyStartCommand extends RyCommand
@@ -35,16 +42,41 @@ public final class RyStartCommand extends RyCommand
     private final CountDownLatch latch = new CountDownLatch(1);
     private final Collection<Throwable> errors = new LinkedHashSet<>();
 
+    @Option(name = "-c", description = "config")
+    public URI configURI = Paths.get("ry.json").toUri();
+
+    @Option(name = "-w", description = "workers")
+    public int workers = 1;
+
+    @Option(name = "-p", description = "properties")
+    public String properties = "ry.props";
+
     @Override
     public void run()
     {
+        Runtime runtime = getRuntime();
         Properties props = new Properties();
         props.setProperty(REAKTOR_DIRECTORY.name(), ".ry/engine");
+
+        Path path = Paths.get(properties);
+        if (Files.exists(path))
+        {
+            try
+            {
+                props.load(Files.newInputStream(path));
+            }
+            catch (IOException ex)
+            {
+                System.out.println("Failed to load properties: " + properties);
+            }
+        }
+
         ReaktorConfiguration config = new ReaktorConfiguration(props);
 
         try (Reaktor reaktor = Reaktor.builder()
             .config(config)
-            .threads(1)
+            .configURL(configURI.toURL())
+            .threads(workers)
             .errorHandler(this::onError)
             .build())
         {
@@ -52,9 +84,11 @@ public final class RyStartCommand extends RyCommand
 
             System.out.println("started");
 
-            Runtime.getRuntime().addShutdownHook(new Thread(latch::countDown));
+            runtime.addShutdownHook(new Thread(latch::countDown));
 
             latch.await();
+
+            errors.forEach(e -> e.printStackTrace(System.err));
 
             System.out.println("stopped");
         }
