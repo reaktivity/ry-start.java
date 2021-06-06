@@ -8,6 +8,7 @@
   <artifactId>ry-start</artifactId>
   <version>develop-SNAPSHOT</version>
   <name>Reaktivity Start Command</name>
+  <description>Reaktivity Start Command</description>
   <url>https://github.com/reaktivity/ry-start.java</url>
 
   <licenses>
