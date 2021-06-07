@@ -39,7 +39,8 @@ import com.github.rvesse.airline.annotations.Option;
 @Command(name = "start", description = "Start engine")
 public final class RyStartCommand extends RyCommand
 {
-    private final CountDownLatch latch = new CountDownLatch(1);
+    private final CountDownLatch stop = new CountDownLatch(1);
+    private final CountDownLatch stopped = new CountDownLatch(1);
     private final Collection<Throwable> errors = new LinkedHashSet<>();
 
     @Option(name = "-c", description = "config")
@@ -84,13 +85,15 @@ public final class RyStartCommand extends RyCommand
 
             System.out.println("started");
 
-            runtime.addShutdownHook(new Thread(latch::countDown));
+            runtime.addShutdownHook(new Thread(this::onShutdown));
 
-            latch.await();
+            stop.await();
 
             errors.forEach(e -> e.printStackTrace(System.err));
 
             System.out.println("stopped");
+
+            stopped.countDown();
         }
         catch (Throwable ex)
         {
@@ -103,6 +106,19 @@ public final class RyStartCommand extends RyCommand
         Throwable error)
     {
         errors.add(error);
-        latch.countDown();
+        stop.countDown();
+    }
+
+    private void onShutdown()
+    {
+        try
+        {
+            stop.countDown();
+            stopped.await();
+        }
+        catch (InterruptedException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 }
