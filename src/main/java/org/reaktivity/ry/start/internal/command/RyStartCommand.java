@@ -81,7 +81,7 @@ public final class RyStartCommand extends RyCommand
             .errorHandler(this::onError)
             .build())
         {
-            reaktor.start();
+            reaktor.start().get();
 
             System.out.println("started");
 
