@@ -47,7 +47,7 @@ public final class RyStartCommand extends RyCommand
     public URI configURI = Paths.get("ry.json").toUri();
 
     @Option(name = "-w", description = "workers")
-    public int workers = 1;
+    public int workers = Runtime.getRuntime().availableProcessors();
 
     @Option(name = "-p", description = "properties")
     public String properties = "ry.props";
